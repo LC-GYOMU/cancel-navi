@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>解約手順ナビゲーション</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+  .box { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+  h3 { margin-top: 0; border-bottom: 2px solid #333; padding-bottom: 5px; }
+</style>
+</head>
+<body>
+
+<h2>故人の解約手続きナビ</h2>
+<p>該当するサービスにチェックを入れてください。</p>
+
+<div id="checkbox-area">読み込み中...</div>
+<hr>
+<h2>必要な手続き一覧</h2>
+<div id="result-area"><p>サービスを選択してください。</p></div>
+
+<script>
+// ▼▼▼ 正しいCSVのURLを貼り付ける ▼▼▼
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRyvpCI9d3dDpwAlmJTzlYnZFpuJFDdSn6070ntshekfRi9KKzc2Moh3xpoe8oIfuRxNjlKzO2dGOql/pub?output=csv";// ▲▲▲ ▲▲▲ ▲▲▲ ▲▲▲ ▲▲▲
+
+const checkboxArea = document.getElementById('checkbox-area');
+
+fetch(csvUrl)
+  .then(response => {
+    if (!response.ok) throw new Error('通信エラー');
+    return response.text();
+  })
+  .then(text => {
+    checkboxArea.innerHTML = ''; 
+    const lines = text.trim().split('\n');
+    const data = lines.slice(1).map(line => line.split(','));
+
+    data.forEach((row, index) => {
+      if(row.length < 8) return; 
+      const label = document.createElement('label');
+      label.style.display = 'block';
+      label.innerHTML = `<input type="checkbox" value="${index}"> ${row[1]} （${row[2]}）`;
+      checkboxArea.appendChild(label);
+      label.querySelector('input').addEventListener('change', () => showResults(data));
+    });
+  })
+  .catch(error => {
+    checkboxArea.innerHTML = '<p style="color:red;">スプレッドシートの読み込みに失敗しました。URLが正しいか確認してください。</p>';
+  });
+
+function showResults(data) {
+  const resultArea = document.getElementById('result-area');
+  resultArea.innerHTML = ''; 
+  const checkedBoxes = document.querySelectorAll('input:checked');
+
+  if(checkedBoxes.length === 0) {
+    resultArea.innerHTML = '<p>サービスを選択してください。</p>';
+    return;
+  }
+
+  checkedBoxes.forEach(box => {
+    const row = data[box.value];
+    resultArea.innerHTML += `
+      <div class="box">
+        <h3>${row[1]}</h3>
+        <ul>
+          <li><strong>専用窓口：</strong> <a href="${row[5]}" target="_blank">${row[5]}</a></li>
+          <li><strong>必要書類：</strong> ${row[6]}</li>
+          <li><strong>注意事項：</strong> ${row[7]}</li>
+        </ul>
+      </div>
+    `;
+  });
+}
+</script>
+
+</body>
+</html>
