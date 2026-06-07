@@ -130,6 +130,46 @@
   a:hover { 
     text-decoration: underline; 
   }
+
+  /* 収益化バナーのデザイン */
+  .ad-banner {
+    background: #fff7ed;
+    border: 2px solid #fdba74;
+    padding: 25px 20px;
+    margin-top: 40px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(253, 186, 116, 0.3);
+  }
+  .ad-banner h3 {
+    color: #c2410c;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    border-bottom: none;
+  }
+  .ad-banner p {
+    color: #7c2d12;
+    font-size: 0.95em;
+    margin-bottom: 20px;
+  }
+  .ad-btn {
+    display: inline-block;
+    background: #ea580c;
+    color: #ffffff !important;
+    padding: 15px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+    box-shadow: 0 4px 6px rgba(234, 88, 12, 0.3);
+    transition: background-color 0.2s, transform 0.1s;
+  }
+  .ad-btn:hover {
+    background: #c2410c;
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
 </style>
 </head>
 <body>
@@ -144,10 +184,15 @@
 <h2>必要な手続き一覧</h2>
 <div id="result-area"><p>サービスを選択してください。</p></div>
 
+<div class="ad-banner">
+  <h3>手続きが多くてお困りですか？</h3>
+  <p>故人の口座凍結、相続手続き、クレジットカードの未払い調査など、煩雑な死後手続きは専門家への丸投げが可能です。<br>まずは無料相談で状況を整理することをおすすめします。</p>
+  <a href="#" class="ad-btn" target="_blank">司法書士・弁護士への無料相談はこちら</a>
+</div>
+
 <script>
-// ▼▼▼ 正しいCSVのURLを貼り付ける ▼▼▼
+// 指定されたCSV用URLを直接埋め込み
 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRyvpCI9d3dDpwAlmJTzlYnZFpuJFDdSn6070ntshekfRi9KKzc2Moh3xpoe8oIfuRxNjlKzO2dGOql/pub?output=csv";
-// ▲▲▲ ▲▲▲ ▲▲▲ ▲▲▲ ▲▲▲
 
 const checkboxArea = document.getElementById('checkbox-area');
 const searchInput = document.getElementById('search-input');
@@ -162,10 +207,8 @@ fetch(csvUrl)
     const lines = text.trim().split('\n');
     const data = lines.slice(1).map(line => line.split(','));
 
-    // カテゴリの抽出
     const categories = [...new Set(data.map(row => row[2]).filter(c => c !== undefined && c !== ""))];
 
-    // カテゴリごとにアコーディオンを作成
     categories.forEach((category, catIndex) => {
       const details = document.createElement('details');
       details.className = 'category-group';
@@ -185,7 +228,6 @@ fetch(csvUrl)
       });
     });
 
-    // 検索機能のイベントリスナー設定
     setupSearch();
   })
   .catch(error => {
@@ -212,11 +254,9 @@ function setupSearch() {
       });
 
       if (keyword !== '') {
-        // 検索文字がある場合：一致する項目があればカテゴリを表示し、開く
         details.style.display = hasVisibleItem ? 'block' : 'none';
         if (hasVisibleItem) details.open = true;
       } else {
-        // 検索文字が空の場合：すべて表示して初期状態に戻す
         details.style.display = 'block';
       }
     });
