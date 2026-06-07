@@ -212,7 +212,6 @@ fetch(csvUrl)
     categories.forEach((category, catIndex) => {
       const details = document.createElement('details');
       details.className = 'category-group';
-      if(catIndex === 0) details.open = true; 
       
       details.innerHTML = `<summary>${category}</summary><div class="category-items"></div>`;
       checkboxArea.appendChild(details);
@@ -258,6 +257,7 @@ function setupSearch() {
         if (hasVisibleItem) details.open = true;
       } else {
         details.style.display = 'block';
+        details.open = false; // 検索クリア時は閉じる
       }
     });
   });
